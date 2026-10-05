@@ -145,7 +145,7 @@ The project uses:
 - **Python / Pandas** for data cleaning, exploration and analysis.
 - **Excel** for pivot tables, charts, KPIs and dashboard presentation.
 - **Databricks** as the notebook environment for the analytical workflow.
-- **Miro** for project planning and workflow visualisation.
+- **Canva** for project planning and workflow visualisation.
 - **GitHub** can be used to version-control the notebook, README and project files.
 
 ## 9. Databricks Notebook
