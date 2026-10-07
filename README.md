@@ -144,6 +144,7 @@ The project uses:
 
 - **Python / Pandas** for data cleaning, exploration and analysis.
 - **Excel** for pivot tables, charts, KPIs and dashboard presentation.
+- **Lovable** for interactive dashboard presentation (https://screenshot-to-layout-pro.lovable.app).
 - **Databricks** as the notebook environment for the analytical workflow.
 - **Canva** for project planning and workflow visualisation.
 - **GitHub** can be used to version-control the notebook, README and project files.
