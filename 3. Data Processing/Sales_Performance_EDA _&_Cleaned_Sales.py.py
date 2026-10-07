@@ -650,6 +650,22 @@ orders["PaymentMethod"].value_counts(dropna=False)
 
 # COMMAND ----------
 
+# Unique Payment Method 
+orders["PaymentMethod"].unique()
+
+# COMMAND ----------
+
+# Find the most frequent payment method
+mode_payment = orders["PaymentMethod"].mode()[0]
+
+# Fill missing/unknown  PaymentMethod values with the mode
+orders["PaymentMethod"] = orders["PaymentMethod"].replace(['', 'None', np.nan], mode_payment)
+
+orders["PaymentMethod"].unique()
+
+
+# COMMAND ----------
+
 # Checking for duplicated records
 orders.duplicated().sum()
 
@@ -709,6 +725,15 @@ display(orders)
 # MAGIC > - 452 values are missing orders i.e. 0.90%
 # MAGIC > - Missing payment methods were examined against order status, discount and quantity variables to identify pontential relation or pattern
 # MAGIC > - Missing values were not replaced because the actual payment method cannot be reliably determined or confirmed from the available data
+# MAGIC
+# MAGIC - Payment Status
+# MAGIC >  - There was one out of five missing payment status that was interpreted as 'None', I replaced it by the mode:
+# MAGIC # Find the most frequent payment method
+# MAGIC mode_payment = df['payment_method'].mode()[0]
+# MAGIC
+# MAGIC # Fill missing/unknown values with the mode
+# MAGIC df['payment_method'] = df['payment_method'].replace(['', 'unknown', np.nan], mode_payment)
+# MAGIC
 
 # COMMAND ----------
 
@@ -787,6 +812,22 @@ payments[payments["PaymentDate"].isna()]
 
 ## Observations:
  # Payment status is None for all missing status values
+
+# COMMAND ----------
+
+# Checking unique payment status
+payments["PaymentStatus"].unique()
+
+# COMMAND ----------
+
+# Value count payment status
+payments["PaymentStatus"].value_counts()
+
+# COMMAND ----------
+
+# See percentage of each payment status
+payments["PaymentStatus"].value_counts(normalize=True)
+
 
 # COMMAND ----------
 
@@ -1603,6 +1644,11 @@ display(sales_clean)
 
 # COMMAND ----------
 
+# Check for payment status unique values
+sales_clean["PaymentStatus"].unique()
+
+# COMMAND ----------
+
 sales_clean.shape
 
 # COMMAND ----------
@@ -1620,6 +1666,54 @@ print(sales_clean["City"].unique())
 
 # COMMAND ----------
 
+# Filter on only payment methods that fail
+failed_payments =sales_clean[sales_clean['PaymentStatus'] == 'Failed']
+
+failed_payments['PaymentMethod'].value_counts()
+
+## Observations:
+ # Gateway payment method fails more often, but also is the most used payment method
+
+
+# COMMAND ----------
+
+# Confirm the number of times a payment method is used against its status
+sales_clean["PaymentMethod"].value_counts()
+
+## Observation:
+ # Gateway is used 24,211 times out of 49,885, this is 49% of the orders 
+ # It is follewed by CardToCard at 11,923 out of 49,885  which is 24% of the orders
+ # Together they make up 73% of payment methods used by customers, this could explain why they are also have the most Failed status compared to the others, not necesssarily that they are bad payment methods but that the frequecy of use is proportional to the PaymentStatus value count
+
+# COMMAND ----------
+
+# See cross table of Paymenth Method and all Payment Status
+pd.crosstab(sales_clean['PaymentMethod'], sales_clean['PaymentStatus'], margins=True).sort_values(by='All', ascending=False)
+
+
+# COMMAND ----------
+
+#See Failed payment methods percentage
+sales_clean.groupby('PaymentMethod')['PaymentStatus'].apply(lambda x: (x == 'Failed').mean() * 100)
+
+
+# COMMAND ----------
+
+# Returns a single total number of all failed transactions
+(sales_clean['PaymentStatus'] == 'Failed').sum()
+
+
+# COMMAND ----------
+
+# normalize='columns' calculates percentages down each column
+pd.crosstab(sales_clean['PaymentMethod'], sales_clean['PaymentStatus'], normalize='columns') * 100
+
+
+
+# COMMAND ----------
+
+# Calculate total percentage of each paymnet status through the payment methods
+(sales_clean['PaymentStatus'].value_counts(normalize=True) * 100).round(2)
 
 
 # COMMAND ----------
